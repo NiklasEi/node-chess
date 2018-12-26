@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title id="title">Chess</title>
+    <link rel="stylesheet" href="/assets/css/chessboard-0.3.0.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<p id="status">Loading...</p>
+<div id="board" style="width: 400px"></div>
+
+<form id="create" action="">
+    <input name="Game" autocomplete="off" />
+    <button>Create</button>
+</form>
+
+<form id="join" action="">
+    <input id="game" name="Game" autocomplete="off" />
+    <input id="player" name="Player" autocomplete="off" />
+    <button>Join</button>
+</form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="/assets/js/chessboard-0.3.0.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="chess.js"></script>
+</body>
+</html>
