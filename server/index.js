@@ -19,7 +19,11 @@ io.on('connection', function(socket){
     });
     socket.on("join", function (form) {
         console.log("Join: ", form);
-        if (!games[form.game]) return;
+        if (!games[form.game]) {
+            console.log("create", form.game);
+            let game = new Game(form.game);
+            games[form.game] = game;
+        };
         console.log("Joining...");
         games[form.game].join(socket, form.player);
     });
