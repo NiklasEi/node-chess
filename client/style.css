@@ -1,0 +1,11 @@
+html, body {
+    margin: 2px;
+    padding: 0;
+}
+
+#board {
+    width: 400px;
+    max-width: 600px;
+    margin: 0;
+    padding: 0;
+}

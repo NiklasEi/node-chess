@@ -1,6 +1,13 @@
 let socket = io();
 let board;
 
+const boardElement = document.getElementById("board");
+
+console.log(window.innerWidth);
+if (window.innerWidth <= 400) {
+    boardElement.style.width = (window.innerWidth -4) + "px";
+}
+
 $(document).ready(function () {
     board = ChessBoard('board', {
         pieceTheme: '/assets/img/chesspieces/wikipedia/{piece}.png',
@@ -9,7 +16,8 @@ $(document).ready(function () {
         sparePieces: false,
         onDrop: onDrop
     });
-
+    $(window).resize(board.resize);
+    /*
     $('#create').submit(function(){
         socket.emit('create', $('#create').find('input').val());
         $('#create').find('input').val('');
@@ -24,6 +32,9 @@ $(document).ready(function () {
         socket.emit('join', data);
         return false;
     });
+    */
+
+    $('#status').text("Connecting to server");
 
     let gameParam = getUrlParameter("game");
     let playerParam = getUrlParameter("player");
@@ -64,7 +75,7 @@ let onDrop = function(source, target, piece, newPos, oldPos, orientation) {
 
 function getUrlParameter(name) {
     name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-    var results = regex.exec(location.search);
+    let regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    let results = regex.exec(location.search);
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-};
+}
