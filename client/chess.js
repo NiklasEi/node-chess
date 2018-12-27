@@ -26,8 +26,11 @@ const indicator = document.querySelector(`.indicator`);
 const blackStatus = document.querySelector(`.black-status`);
 const whiteStatus = document.querySelector(`.white-status`);
 
-if (window.innerWidth <= 404) {
-    container.style.width = (window.innerWidth - 4) + "px";
+let width = document.body.clientWidth
+    || document.documentElement.clientWidth
+    || window.innerWidth;
+if (width <= 608) {
+    container.style.width = (width - 8) + "px";
 }
 
 $(document).ready(function () {
