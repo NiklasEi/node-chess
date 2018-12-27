@@ -2,6 +2,15 @@ let socket = io();
 let board;
 let currentPlayer = "w";
 let currentPosition;
+let gameOver = false;
+
+let onDragStart = function(source, piece, position, orientation) {
+    if (gameOver === true ||
+        (piece.indexOf(board.orientation().charAt(0)) === -1) ||
+        (currentPlayer !== board.orientation().charAt(0))) {
+        return false;
+    }
+};
 
 let onDrop = function(source, target, piece, newPos, oldPos, orientation) {
     moveObj = {
@@ -10,6 +19,7 @@ let onDrop = function(source, target, piece, newPos, oldPos, orientation) {
         piece: piece
     };
     currentPosition = ChessBoard.objToFen(newPos);
+    $('#heading').text("Waiting for server");
     socket.emit('submit move', moveObj);
 };
 
@@ -18,6 +28,7 @@ let options = {
     draggable: true,
     dropOffBoard: 'trash',
     sparePieces: false,
+    onDragStart: onDragStart,
     onDrop: onDrop
 };
 
