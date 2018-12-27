@@ -3,6 +3,7 @@ class Game {
         this.id = id;
         this.currentTurn = "w";
         this.started = false;
+        this.over = false;
         this.chess = new require('chess.js').Chess();
     };
 
@@ -31,14 +32,42 @@ class Game {
     }
 
     submitMove(move) {
-        console.log("Got move: ", move);
         let moveReturn = this.chess.move(move);
         let valid = !!moveReturn;
-        console.log("valid? ", valid);
-        this.propagateState();
+        this.broadcast("move", this.chess.fen());
         if (valid) {
             this.switchTurns();
         }
+        this.checkGameStatus();
+    }
+
+    checkGameStatus() {
+        if (this.chess.in_checkmate()) {
+            this.broadcast("state", "checkmate " + this.currentTurn);
+        } else if (this.chess.in_check()) {
+            this.broadcast("state", "check " + this.currentTurn);
+        } else if (this.chess.in_threefold_repetition()) {
+            // ToDo: player can claim draw
+            this.broadcast("state", "draw");
+        } else {
+            if (this.chess.in_draw()) {
+                if (this.chess.insufficient_material()) {
+                    this.broadcast("state", "draw");
+                } else {
+                    // 50 moves rule
+                    this.broadcast("state", "draw");
+                }
+            } else if (this.chess.in_stalemate()) {
+                this.broadcast("state", "draw");
+            } else {
+                this.broadcast("state", "none " + this.currentTurn);
+            }
+        }
+    }
+
+    broadcast(channel, msg) {
+        if (this.firstSocket) this.firstSocket.emit(channel, msg);
+        if (this.secondSocket) this.secondSocket.emit(channel, msg);
     }
 
     switchTurns() {
@@ -97,6 +126,9 @@ class Game {
         } else {
             this.firstStatus = "Others turn";
         }
+        if (this.over) {
+
+        }
     }
 
     connectSecondPlayer() {
@@ -111,11 +143,6 @@ class Game {
         } else {
             this.secondStatus = "Others turn";
         }
-    }
-
-    propagateState() {
-        this.firstSocket.emit("move", this.chess.fen());
-        if (this.secondSocket) this.secondSocket.emit("move", this.chess.fen());
     }
 
     start() {

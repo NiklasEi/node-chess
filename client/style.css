@@ -1,11 +1,60 @@
 html, body {
     margin: 2px;
     padding: 0;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
 }
 
 #board {
+    flex: 1;
     width: 400px;
     max-width: 600px;
     margin: 0;
     padding: 0;
+    align-self: center;
+    display: flex;
+    justify-content: center;
+    vertical-align: middle;
+}
+
+#heading {
+    text-align: center;
+}
+
+.indicator {
+    height: 50px;
+}
+
+.container {
+    flex: 1;
+    align-self: center;
+    width: 400px;
+    max-width: 600px;
+}
+
+.status {
+    flex: 1;
+    align-self: center;
+    display: flex;
+    justify-content: space-between;
+    background: darkgrey;
+    line-height: 50px;
+    padding: 5px;
+}
+
+.black-status, .white-status {
+    flex: 1;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 1.1em;
+}
+
+.black-status {
+    text-align: right;
+    color: black;
+}
+
+.white-status {
+    color: white;
 }

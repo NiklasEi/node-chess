@@ -14,8 +14,7 @@ let game;
 io.on('connection', function(socket){
     socket.on("create", function (id) {
         console.log("create", id);
-        let game = new Game(id);
-        games[id] = game;
+        games[id] = new Game(id);
     });
     socket.on("join", function (form) {
         console.log("Join: ", form);
@@ -23,7 +22,7 @@ io.on('connection', function(socket){
             console.log("create", form.game);
             let game = new Game(form.game);
             games[form.game] = game;
-        };
+        }
         console.log("Joining...");
         games[form.game].join(socket, form.player);
     });
