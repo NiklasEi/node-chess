@@ -2,28 +2,8 @@ html, body {
     margin: 2px;
     padding: 0;
     display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-}
-
-#board {
-    flex: 1;
-    width: 400px;
-    max-width: 600px;
-    margin: 0;
-    padding: 0;
-    align-self: center;
-    display: flex;
     justify-content: center;
-    vertical-align: middle;
-}
-
-#heading {
-    text-align: center;
-}
-
-.indicator {
-    height: 50px;
+    flex-direction: column;
 }
 
 .container {
@@ -31,6 +11,10 @@ html, body {
     align-self: center;
     width: 400px;
     max-width: 600px;
+}
+
+#heading {
+    text-align: center;
 }
 
 .status {
@@ -57,4 +41,21 @@ html, body {
 
 .white-status {
     color: white;
+}
+
+#board {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+    align-self: center;
+    display: flex;
+    justify-content: center;
+    vertical-align: middle;
+}
+.indicator {
+    height: 50px;
+}
+
+@-ms-viewport{
+    width: device-width;
 }

@@ -26,8 +26,6 @@ const indicator = document.querySelector(`.indicator`);
 const blackStatus = document.querySelector(`.black-status`);
 const whiteStatus = document.querySelector(`.white-status`);
 
-console.log(blackStatus)
-
 if (window.innerWidth <= 404) {
     container.style.width = (window.innerWidth - 4) + "px";
 }
