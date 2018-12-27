@@ -1,9 +1,7 @@
 class Game {
     constructor(id) {
         this.id = id;
-        this.currentTurn = "w";
         this.started = false;
-        this.over = false;
         this.chess = new require('chess.js').Chess();
     };
 
@@ -32,20 +30,16 @@ class Game {
     }
 
     submitMove(move) {
-        let moveReturn = this.chess.move(move);
-        let valid = !!moveReturn;
+        this.chess.move(move);
         this.broadcast("move", this.chess.fen());
-        if (valid) {
-            this.switchTurns();
-        }
         this.checkGameStatus();
     }
 
     checkGameStatus() {
         if (this.chess.in_checkmate()) {
-            this.broadcast("state", "checkmate " + this.currentTurn);
+            this.broadcast("state", "checkmate " + this.chess.turn());
         } else if (this.chess.in_check()) {
-            this.broadcast("state", "check " + this.currentTurn);
+            this.broadcast("state", "check " + this.chess.turn());
         } else if (this.chess.in_threefold_repetition()) {
             // ToDo: player can claim draw
             this.broadcast("state", "draw");
@@ -60,7 +54,7 @@ class Game {
             } else if (this.chess.in_stalemate()) {
                 this.broadcast("state", "draw");
             } else {
-                this.broadcast("state", "none " + this.currentTurn);
+                this.broadcast("state", "none " + this.chess.turn());
             }
         }
     }
@@ -68,21 +62,6 @@ class Game {
     broadcast(channel, msg) {
         if (this.firstSocket) this.firstSocket.emit(channel, msg);
         if (this.secondSocket) this.secondSocket.emit(channel, msg);
-    }
-
-    switchTurns() {
-        switch(this.currentTurn) {
-            case "w":
-                this.secondStatus = "Your turn";
-                this.firstStatus = "Others turn";
-                this.currentTurn = "b";
-                return;
-            case "b":
-                this.firstStatus = "Your turn";
-                this.secondStatus = "Others turn";
-                this.currentTurn = "w";
-                return;
-        }
     }
 
     join(socket, id) {
@@ -119,15 +98,11 @@ class Game {
         this.firstSocket.on('disconnect', function(){
             this.secondStatus = "The other player lost connection";
         });
-        this.firstSocket.emit("move", this.chess.fen());
         this.firstSocket.emit("board", "orientation white");
-        if (this.currentTurn === "w") {
-            this.firstStatus = "Your turn";
-        } else {
-            this.firstStatus = "Others turn";
-        }
-        if (this.over) {
-
+        this.firstSocket.emit("move", this.chess.fen());
+        if (this.chess.game_over()) {
+            // ToDo: joined finished game
+            // can be anything: draw, mate...
         }
     }
 
@@ -136,13 +111,8 @@ class Game {
         this.secondSocket.on('disconnect', function(){
             this.firstStatus = "The other player lost connection";
         });
-        this.secondSocket.emit("move", this.chess.fen());
         this.secondSocket.emit("board", "orientation black");
-        if (this.currentTurn === "b") {
-            this.secondStatus = "Your turn";
-        } else {
-            this.secondStatus = "Others turn";
-        }
+        this.secondSocket.emit("move", this.chess.fen());
     }
 
     start() {

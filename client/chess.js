@@ -70,9 +70,15 @@ socket.on('move', function(msg){
         currentPlayer = msg.split(" ")[1];
         indicator.src = options.pieceTheme.replace(`{piece}`, currentPlayer + "P");
     }
+    if (board.orientation().charAt(0) === currentPlayer) {
+        $('#heading').text("Your turn");
+    } else {
+        $('#heading').text("Others turn");
+    }
 });
 
 socket.on('display status', function (status) {
+    console.log("status update: ", status);
     $('#heading').text(status);
 });
 
