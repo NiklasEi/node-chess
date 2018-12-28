@@ -32,6 +32,7 @@ class Game {
     submitMove(move) {
         this.chess.move(move);
         this.broadcast("move", this.chess.fen());
+        // implement callback "move received"
         this.checkGameStatus();
     }
 
@@ -100,6 +101,7 @@ class Game {
         });
         this.firstSocket.emit("board", "orientation white");
         this.firstSocket.emit("move", this.chess.fen());
+        this.checkGameStatus();
         if (this.chess.game_over()) {
             // ToDo: joined finished game
             // can be anything: draw, mate...
@@ -113,6 +115,7 @@ class Game {
         });
         this.secondSocket.emit("board", "orientation black");
         this.secondSocket.emit("move", this.chess.fen());
+        this.checkGameStatus();
     }
 
     start() {
