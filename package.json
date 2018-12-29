@@ -1,14 +1,14 @@
 {
-  "name": "nikl.me.chess",
+  "name": "me.nikl.chess",
   "version": "1.0.0",
-  "description": "",
+  "description": "Chess server that allows to play games against your friends on Telegram",
   "main": "server/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server/index.js"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Niklas Eicker",
+  "license": "GNU GPLv3",
   "dependencies": {
     "chess.js": "^0.10.2",
     "express": "^4.16.4",
