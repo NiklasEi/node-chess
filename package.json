@@ -8,7 +8,8 @@
     "start": "node server/index.js"
   },
   "author": "Niklas Eicker",
-  "license": "GNU GPLv3",
+  "license": "GPL-3.0-or-later",
+  "repository": "https://github.com/NiklasEi/node-chess",
   "dependencies": {
     "chess.js": "^0.10.2",
     "express": "^4.16.4",
