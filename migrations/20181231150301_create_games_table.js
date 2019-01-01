@@ -1,9 +1,8 @@
 exports.up = function(knex, Promise) {
     return knex.schema.createTable('games', function(t) {
         t.increments('id').unsigned().primary();
-        t.dateTime('createdAt').notNull();
-        t.dateTime('updatedAt').nullable();
-        t.dateTime('finishedAt').nullable();
+        t.timestamps(false, true);
+        t.dateTime('finishedAt').nullable().defaultTo(null);
         t.boolean('visible').defaultTo(false);
         t.string('playerOne').nullable();
         t.string('playerTwo').nullable();
