@@ -1,10 +1,8 @@
-const knex = require('knex')(require('../knexfile'));
+const Match = require("../models/match");
 
 module.exports = {
-    createGame ({ gameId }) {
-        console.log(`Add game ${gameId}`);
-        return knex('games').insert({
-            gameId
-        })
+    createMatch (game) {
+        console.log("Add game: ", JSON.stringify(game));
+        return Match.forge(game).save();
     }
 };

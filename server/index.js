@@ -8,9 +8,6 @@ const store = require('./store');
 const bodyParser = require('body-parser');
 const chessServerToken = process.env.CHESS_SERVER_TOKEN;
 
-// migrate database to latest state
-require('knex')(require('../knexfile')).migrate.latest();
-
 // parse application/json
 app.use(bodyParser.json());
 
@@ -20,36 +17,25 @@ app.get('/match/:gameid', function (req, res) {
     res.send(req.params)
 });
 
-// ToDo remove
-app.post('/:chessServerToken/createGame', (req, res) => {
-    /*
+app.post('/:chessServerToken/newMatch', (req, res) => {
     if(req.params.chessServerToken !== chessServerToken) {
         res.status(401);
         res.send('No permission');
         return;
     }
-    */
     store
-        .createGame({
-            gameId: req.body.gameId
-        })
-        .then(() => res.sendStatus(200));
+        .createMatch({
+            playerOne: req.body.first_player,
+            playerTwo: req.body.second_player
+        }).then(game => {
+            res.status(200);
+            res.send(game);
+        });
 });
 
 const games = {};
 let game;
 io.on('connection', function(socket){
-    socket.on("create", function (id) {
-        store
-            .createGame({
-                gameId: req.body.gameId
-            })
-            .then(() => res.sendStatus(200));
-        /*
-        console.log("create", id);
-        games[id] = new Game(id);
-        */
-    });
     socket.on("join", function (form) {
         console.log("Join: ", form);
         if (!games[form.game]) {

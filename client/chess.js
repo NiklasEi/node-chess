@@ -4,28 +4,6 @@ let currentPlayer = "w";
 let currentPosition;
 let gameOver = false;
 
-/**/
-
-const createGame = document.querySelector('.create-game');
-createGame.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const gameId = createGame.querySelector('.gameId').value;
-    post('/createGame', { gameId })
-});
-
-function post (path, data) {
-    return window.fetch(path, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-}
-
-/**/
-
 let onDragStart = function(source, piece, position, orientation) {
     if (gameOver === true ||
         (piece.indexOf(board.orientation().charAt(0)) === -1) ||
