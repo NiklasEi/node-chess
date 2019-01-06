@@ -5,13 +5,20 @@
   "main": "server/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "migrate": "knex migrate:latest"
   },
   "author": "Niklas Eicker",
-  "license": "GNU GPLv3",
+  "license": "GPL-3.0-or-later",
+  "repository": "https://github.com/NiklasEi/node-chess",
   "dependencies": {
+    "body-parser": "^1.18.3",
+    "bookshelf": "^0.14.2",
     "chess.js": "^0.10.2",
     "express": "^4.16.4",
+    "knex": "^0.16.3",
+    "pg": "^7.7.1",
+    "request": "^2.88.0",
     "socket.io": "^2.2.0"
   }
 }
