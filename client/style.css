@@ -6,10 +6,36 @@ body {
     flex-direction: column;
 }
 
+.hidden {
+    visibility: hidden;
+}
+
 .container {
     width: 600px;
     max-width: 600px;
     margin: 4px auto;
+}
+
+div.matches {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    vertical-align: middle;
+    align-items: center;
+}
+
+div.matches div.match {
+    border: red solid 2px;
+    border-radius: 5px;
+    display: block;
+    margin-bottom: 0.5em;
+    padding: 1em;
+}
+
+div.matches div.match:hover {
+    border-color: white;
+    background: cornflowerblue;
+    cursor: pointer;
 }
 
 #heading {
@@ -50,10 +76,4 @@ body {
     vertical-align: middle;
 }
 
-.indicator {
-    height: 50px;
-}
-
-@-ms-viewport{
-    width: device-width;
-}
+.indicator

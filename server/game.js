@@ -1,8 +1,8 @@
 class Game {
-    constructor(id) {
-        this.id = id;
-        this.started = false;
-        this.chess = new require('chess.js').Chess();
+    constructor(match) {
+        this.id = match.id;
+        this.started = !(match.updated_at === match.created_at);
+        this.chess = new require('chess.js').Chess(match.fen);
     };
 
     set firstStatus(status) {

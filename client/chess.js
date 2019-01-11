@@ -4,6 +4,39 @@ let currentPlayer = "w";
 let currentPosition;
 let gameOver = false;
 
+let gameParam = getUrlParameter("game");
+let playerParam = getUrlParameter("player");
+
+const matchHtml = `
+    <p id="heading">Loading...</p>
+    <div id="board-container" class="hidden">
+        <div class="status">
+            <span class="white-status"></span>
+            <img class="indicator" src="/assets/img/chesspieces/wikipedia/wP.png">
+            <span class="black-status"></span>
+        </div>
+        <div id="board"></div>
+    </div>
+    <br>
+    <button type="button" onclick="changeMatch()">Show match list</button>`;
+
+const matchListHtml = `
+    <div class="matches">
+    </div>`;
+
+const container = document.querySelector(`.container`);
+let indicator;
+let blackStatus;
+let whiteStatus;
+let boardContainer;
+
+function reloadBoardElements() {
+    indicator = document.querySelector(`.indicator`);
+    blackStatus = document.querySelector(`.black-status`);
+    whiteStatus = document.querySelector(`.white-status`);
+    boardContainer = document.querySelector(`#board-container`);
+}
+
 let onDragStart = function(source, piece, position, orientation) {
     if (gameOver === true ||
         (piece.indexOf(board.orientation().charAt(0)) === -1) ||
@@ -13,7 +46,7 @@ let onDragStart = function(source, piece, position, orientation) {
 };
 
 let onDrop = function(source, target, piece, newPos, oldPos, orientation) {
-    moveObj = {
+    const moveObj = {
         from: source,
         to: target,
         piece: piece
@@ -32,10 +65,46 @@ let options = {
     onDrop: onDrop
 };
 
-const container = document.querySelector(`.container`);
-const indicator = document.querySelector(`.indicator`);
-const blackStatus = document.querySelector(`.black-status`);
-const whiteStatus = document.querySelector(`.white-status`);
+function listMatches() {
+    socket.emit('getGames', playerParam, function (matches) {
+        console.log(matches);
+        const html = matches.map(match => {
+            const isFirstPlayer = match.playerOne === playerParam;
+            const turn = isFirstPlayer === ("w" === match.fen.split(" ")[1]);
+            const round = match.fen.split(" ")[5];
+            return `
+                <div data-gameid="${match.id}" onclick="clickGame(this);" class="match">
+                    <p class="turn">Your turn? ${turn}</p>
+                    <p class="round">Round: ${round}</p>
+                </div>
+            `
+        }).join('');
+        container.innerHTML = matchListHtml;
+        document.querySelector(`.matches`).innerHTML = html;
+    });
+}
+
+function changeMatch() {
+    listMatches();
+}
+
+function clickGame(element) {
+    const id = element.dataset.gameid;
+    if(playerParam) {
+        joinGame(id, playerParam);
+    } else {
+        $('#heading').text("Please use the telegram bot");
+    }
+}
+
+function joinGame(gameID, player) {
+    container.innerHTML = matchHtml;
+    reloadBoardElements();
+    board = ChessBoard('board', options);
+    $(window).resize(board.resize);
+    $('#heading').text("Connecting to server...");
+    socket.emit('join', { player: player, game: gameID });
+}
 
 let width = document.body.clientWidth
     || document.documentElement.clientWidth
@@ -45,23 +114,27 @@ if (width <= 608) {
 }
 
 $(document).ready(function () {
-    board = ChessBoard('board', options);
-    $(window).resize(board.resize);
-    let gameParam = getUrlParameter("game");
-    let playerParam = getUrlParameter("player");
-    if(gameParam && playerParam) {
-        $('#status').text("Connecting to server");
-        data = {
-            game: gameParam,
+    if(playerParam) {
+        $('#heading').text("Connecting to server...");
+        let data = {
             player: playerParam
         };
-        socket.emit('join', data);
+        if (gameParam) {
+            joinGame(gameParam, playerParam);
+        } else {
+            listMatches();
+            socket.emit('join', data);
+        }
     } else {
-        $('#status').text("No game specified");
+        $('#heading').text("Please use the telegram bot");
     }
 });
 
 socket.on('move', function(msg){
+    if (!board) {
+        console.log("server sending move without chosen game");
+        return;
+    }
     // msg is current FEN
     if (currentPosition !== msg.split(" ")[0]) {
         board.position(msg);
