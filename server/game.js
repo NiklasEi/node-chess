@@ -30,22 +30,26 @@ class Game {
     }
 
     submitMove(move) {
-        this.chess.move(move);
+        const validMove = !!this.chess.move(move);
         this.broadcast("move", this.chess.fen());
-        // implement callback "move received"
+        if(validMove) require('./store').updateMatch(this.id, {fen: this.chess.fen()}).then();
+        // ToDo: implement callback "move received" otherwise schedule resend
         this.checkGameStatus();
     }
 
     checkGameStatus() {
         if (this.chess.in_checkmate()) {
+            require('./store').updateMatch(this.id, {finishedAt: new Date()}).then();
             this.broadcast("state", "checkmate " + this.chess.turn());
         } else if (this.chess.in_check()) {
+            require('./store').updateMatch(this.id, {finishedAt: new Date()}).then();
             this.broadcast("state", "check " + this.chess.turn());
         } else if (this.chess.in_threefold_repetition()) {
             // ToDo: player can claim draw
             this.broadcast("state", "draw");
         } else {
             if (this.chess.in_draw()) {
+                require('./store').updateMatch(this.id, {finishedAt: new Date()}).then();
                 if (this.chess.insufficient_material()) {
                     this.broadcast("state", "draw");
                 } else {
@@ -53,6 +57,7 @@ class Game {
                     this.broadcast("state", "draw");
                 }
             } else if (this.chess.in_stalemate()) {
+                require('./store').updateMatch(this.id, {finishedAt: new Date()}).then();
                 this.broadcast("state", "draw");
             } else {
                 this.broadcast("state", "none " + this.chess.turn());
