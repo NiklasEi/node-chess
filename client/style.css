@@ -6,10 +6,6 @@ body {
     flex-direction: column;
 }
 
-.hidden {
-    visibility: hidden;
-}
-
 .container {
     width: 600px;
     max-width: 600px;

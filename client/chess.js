@@ -9,7 +9,7 @@ let playerParam = getUrlParameter("player");
 
 const matchHtml = `
     <p id="heading">Loading...</p>
-    <div id="board-container" class="hidden">
+    <div id="board-container">
         <div class="status">
             <span class="white-status"></span>
             <img class="indicator" src="/assets/img/chesspieces/wikipedia/wP.png">
