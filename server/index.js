@@ -40,23 +40,6 @@ app.post('/:chessServerToken/newMatch', (req, res) => {
         });
 });
 
-// getMatch
-app.post('/:chessServerToken/getRunningMatches', (req, res) => {
-    if(req.params.chessServerToken !== chessServerToken) {
-        console.log("Wrong token (getRunningMatches)");
-        res.status(401);
-        res.send('No permission');
-        return;
-    }
-    store
-        .getRunningMatches({
-            player: req.body.first_player ? req.body.first_player : req.body.second_player
-        }).then(matches => {
-        res.status(200);
-        res.send(game);
-    });
-});
-
 let games = {};
 io.on('connection', function(socket){
     socket.on("join", function (form) {
@@ -67,8 +50,8 @@ io.on('connection', function(socket){
         }
         if (!games[form.game]) {
             console.log("grab game from db: ", form);
-            require("../models/match").query("where", "id", "=", form.game).fetch().then(match => {
-                games[form.game] = new Game(match);
+            require("../models/match").where({id: form.game}).fetch().then(match => {
+                games[form.game] = new Game(match.attributes, io);
                 joinGame(socket, form.game, form.player);
             });
         } else {
@@ -77,10 +60,31 @@ io.on('connection', function(socket){
     });
 
     socket.on("getGames", function (player, callback) {
+        socket.leaveAll();
         store
             .getRunningMatches({
                 player: player
             }).then(matches => callback(matches));
+    });
+
+    socket.on("submit move", function (move) {
+        console.log("rooms: ", socket.rooms);
+        for (let room in socket.rooms) {
+            if(!socket.rooms.hasOwnProperty(room)) continue;
+            if(room.charAt(0) !== "w" && room.charAt(0) !== "b") continue;
+            let game =  games[room.substring(1)];
+            if(!game) continue;
+            switch (room.charAt(0)) {
+                case "w":
+                    game.submitFirstMove(move);
+                    return;
+                case "b":
+                    game.submitSecondMove(move);
+                    return;
+                default:
+                    console.log("Invalid room: ", room);
+            }
+        }
     });
 
     console.log('a user connected');
@@ -88,6 +92,8 @@ io.on('connection', function(socket){
 });
 
 function joinGame(socket, gameID, playerID) {
+    socket.leaveAll();
+    socket.join(gameID);
     console.log("Joining...");
     let game = games[gameID];
     if (game) game.join(socket, playerID);
