@@ -80,12 +80,14 @@ class Game {
         if (id === this.firstPlayer) {
             console.log("login first player");
             socket.join("w" + this.id);
+            socket.emit("board", "orientation white");
             if (!this.started) {
                 this.firstStatus = "Waiting for other player...";
             }
         } else if(id === this.secondPlayer) {
             console.log("login second player");
             socket.join("b" + this.id);
+            socket.emit("board", "orientation black");
             if (!this.started) {
                 this.secondStatus = "Waiting for other player...";
             }
