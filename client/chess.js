@@ -101,6 +101,7 @@ function joinGame(gameID, player) {
     container.innerHTML = matchHtml;
     reloadBoardElements();
     board = ChessBoard('board', options);
+    gameParam = gameID;
     $(window).resize(board.resize);
     $('#heading').text("Connecting to server...");
     socket.emit('join', { player: player, game: gameID });
@@ -130,6 +131,14 @@ $(document).ready(function () {
     }
 });
 
+function updateTurnInfo() {
+    if (board.orientation().charAt(0) === currentPlayer) {
+        $('#heading').text("Your turn");
+    } else {
+        $('#heading').text("Others turn");
+    }
+}
+
 socket.on('move', function(msg){
     if (!board) {
         console.log("server sending move without chosen game");
@@ -141,13 +150,9 @@ socket.on('move', function(msg){
     }
     if (msg.split(" ")[1] !== currentPlayer) {
         currentPlayer = msg.split(" ")[1];
-        indicator.src = options.pieceTheme.replace(`{piece}`, currentPlayer + "P");
     }
-    if (board.orientation().charAt(0) === currentPlayer) {
-        $('#heading').text("Your turn");
-    } else {
-        $('#heading').text("Others turn");
-    }
+    indicator.src = options.pieceTheme.replace(`{piece}`, currentPlayer + "P");
+    updateTurnInfo();
 });
 
 socket.on('display status', function (status) {
@@ -201,6 +206,7 @@ socket.on('board', function (func) {
         return;
     }
     board[func]();
+    updateTurnInfo();
 });
 
 function getUrlParameter(name) {

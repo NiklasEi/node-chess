@@ -3,6 +3,7 @@ class Game {
         console.log("New game from db: ", match);
         this.io = io;
         this.id = match.id;
+        this.match = match;
         this.firstPlayer = match.playerOne;
         this.secondPlayer = match.playerTwo;
         this.started = !(match.updated_at === match.created_at);
@@ -92,10 +93,14 @@ class Game {
                 this.secondStatus = "Waiting for other player...";
             }
         } else {
-            // ToDo: don't allow, if game is not public
-            socket.emit("display status", "Watching...");
-            return;
+            if (!this.match.public) {
+                socket.emit("display status", "Game is private");
+                return;
+            } else {
+                socket.emit("display status", "Watching...");
+            }
         }
+        socket.emit("move", this.chess.fen());
         if(!this.started) {
             if(this.io.sockets.in("w" + this.id).clients((error, clients) => {
                     if (error) throw error;
